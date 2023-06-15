@@ -1,17 +1,17 @@
-import createConnectionPool, {sql} from '../';
-import { test } from 'node:test';
-import assert from 'node:assert';
+import createConnectionPool, { sql } from "../";
+import { test } from "node:test";
+import assert from "node:assert";
 
-async function testPool (t) {
+async function testPool(t) {
   const db = createConnectionPool();
   t.after(db.dispose.bind(db));
   return db;
 }
 
-test('streaming', async (t) => {
+test("streaming", async (t) => {
   const db = await testPool(t);
   await db.query(
-    sql`CREATE TABLE stream_values (id BIGINT NOT NULL PRIMARY KEY);`,
+    sql`CREATE TABLE stream_values (id BIGINT NOT NULL PRIMARY KEY);`
   );
   const allValues = [];
   for (let batch = 0; batch < 10; batch++) {
@@ -25,7 +25,7 @@ test('streaming', async (t) => {
       INSERT INTO stream_values (id)
       VALUES ${sql.join(
         batchValues.map((v) => sql`(${v})`),
-        sql`,`,
+        sql`,`
       )};
     `);
   }

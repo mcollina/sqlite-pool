@@ -1,16 +1,16 @@
-import sql, {SQLQuery, isSqlQuery} from '@databases/sql';
+import sql, { SQLQuery, isSqlQuery } from "@databases/sql";
 import connect, {
   DatabaseConnection as SyncDatabaseConnection,
-} from '@databases/sqlite-sync';
+} from "@databases/sqlite-sync";
 import createBaseConnectionPool, {
   ConnectionPool,
   PoolConnection,
   PoolOptions,
-} from '@databases/connection-pool';
-import {once} from 'events';
+} from "@databases/connection-pool";
+import { once } from "events";
 
-export type {SQLQuery};
-export {sql, isSqlQuery};
+export type { SQLQuery };
+export { sql, isSqlQuery };
 
 type connectParameters = Parameters<typeof connect>;
 
@@ -29,12 +29,12 @@ export interface DatabaseConnection extends DatabaseTransaction {
 
 async function* transactionalQueryStream(
   transaction: TransactionImplementation,
-  query: SQLQuery,
+  query: SQLQuery
 ): AsyncIterableIterator<any> {
   const connection = transaction.connection;
   for (const row of connection.queryStream(query)) {
     if (transaction.aborted) {
-      throw new Error('Transaction aborted');
+      throw new Error("Transaction aborted");
     }
     yield row;
   }
@@ -50,7 +50,7 @@ class TransactionImplementation implements DatabaseTransaction {
 
   async query(query: SQLQuery): Promise<any[]> {
     if (this.aborted) {
-      throw new Error('Transaction aborted');
+      throw new Error("Transaction aborted");
     }
     return this.connection.query(query);
   }
@@ -64,7 +64,7 @@ async function* queryStream(
   maybePoolConnection: Promise<
     PoolConnection<SyncDatabaseConnectionWithController>
   >,
-  query: SQLQuery,
+  query: SQLQuery
 ) {
   const poolConnection = await maybePoolConnection;
   try {
@@ -78,7 +78,7 @@ async function* queryStream(
 
 type PartialPoolOptions = Omit<
   PoolOptions<SyncDatabaseConnection>,
-  'openConnection' | 'closeConnection'
+  "openConnection" | "closeConnection"
 >;
 
 interface SyncDatabaseConnectionWithController extends SyncDatabaseConnection {
@@ -91,7 +91,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
   constructor(
     filename?: string,
     options?: DatabaseOptions,
-    poolOptions?: PartialPoolOptions,
+    poolOptions?: PartialPoolOptions
   ) {
     this.#pool = createBaseConnectionPool({
       async openConnection() {
@@ -137,8 +137,8 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
       connection.controller = controller;
       const res = await Promise.race([
         fn(tx),
-        once(controller.signal, 'abort').then(() => {
-          throw new Error('Transaction aborted');
+        once(controller.signal, "abort").then(() => {
+          throw new Error("Transaction aborted");
         }),
       ]);
       connection.query(sql`COMMIT`);
@@ -163,7 +163,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
 function createConnectionPool(
   filename?: string,
   options?: DatabaseOptions,
-  poolOptions?: PartialPoolOptions,
+  poolOptions?: PartialPoolOptions
 ): DatabaseConnection {
   return new DatabaseConnectionImplementation(filename, options, poolOptions);
 }
