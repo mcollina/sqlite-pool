@@ -13,6 +13,10 @@
   },
   "author": "Matteo Collina <hello@matteocollina.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mcollina/sqlite-pool.git"
+  },
   "dependencies": {
     "@databases/connection-pool": "^1.1.0",
     "@databases/sql": "^3.3.0",
