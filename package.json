@@ -1,0 +1,28 @@
+{
+  "name": "@matteo.collina/sqlite-pool",
+  "version": "0.0.1",
+  "description": "A connection pool for better-sqlite3 compatible with atdatabases suite",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "npm run build && node --test build/test/*test.js"
+  },
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@databases/connection-pool": "^1.1.0",
+    "@databases/sql": "^3.3.0",
+    "@databases/sqlite-sync": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "prettier": "^2.8.8",
+    "typescript": "^5.1.3"
+  },
+  "files": [
+    "build/index.js",
+    "build/index.d.ts"
+  ]
+}
