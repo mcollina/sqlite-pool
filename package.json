@@ -20,7 +20,7 @@
   "dependencies": {
     "@databases/connection-pool": "^1.1.0",
     "@databases/sql": "^3.3.0",
-    "@databases/sqlite-sync": "^1.0.0"
+    "@databases/sqlite-sync": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",
