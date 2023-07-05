@@ -29,6 +29,7 @@
   },
   "files": [
     "build/index.js",
-    "build/index.d.ts"
+    "build/index.d.ts",
+    "build/index.js.map"
   ]
 }

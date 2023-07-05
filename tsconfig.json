@@ -3,6 +3,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2019",
     "rootDir": "src",
