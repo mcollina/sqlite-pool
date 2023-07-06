@@ -7,6 +7,7 @@ import createBaseConnectionPool, {
   PoolConnection,
   PoolOptions,
 } from "@databases/connection-pool";
+import { escapeSQLiteIdentifier } from "@databases/escape-identifier";
 import { once } from "events";
 
 export type { SQLQuery };
@@ -43,19 +44,26 @@ async function* transactionalQueryStream(
 class TransactionImplementation implements DatabaseTransaction {
   connection: SyncDatabaseConnection;
   aborted: boolean = false;
+  #onQuery: (query: SQLQuery) => void;
 
-  constructor(connection: SyncDatabaseConnection) {
+  constructor(
+    connection: SyncDatabaseConnection,
+    onQuery: (query: SQLQuery) => void
+  ) {
     this.connection = connection;
+    this.#onQuery = onQuery;
   }
 
   async query(query: SQLQuery): Promise<any[]> {
     if (this.aborted) {
       throw new Error("Transaction aborted");
     }
+    this.#onQuery(query);
     return this.connection.query(query);
   }
 
   queryStream(query: SQLQuery): AsyncIterableIterator<any> {
+    this.#onQuery(query);
     return transactionalQueryStream(this, query);
   }
 }
@@ -81,18 +89,35 @@ type PartialPoolOptions = Omit<
   "openConnection" | "closeConnection"
 >;
 
+type onQueryParamters = {
+  text: string;
+  values: unknown[];
+};
+
+type ConnectionPoolOptions = PartialPoolOptions & {
+  onQuery?(onQueryParamters): void;
+};
+
 interface SyncDatabaseConnectionWithController extends SyncDatabaseConnection {
   controller?: AbortController;
 }
 
 class DatabaseConnectionImplementation implements DatabaseConnection {
   #pool: ConnectionPool<SyncDatabaseConnectionWithController>;
+  #onQuery: (query: SQLQuery) => void;
 
   constructor(
     filename?: string,
     options?: DatabaseOptions,
-    poolOptions?: PartialPoolOptions
+    poolOptions?: ConnectionPoolOptions
   ) {
+    this.#onQuery = (query) => {
+      const formatted = query.format({
+        escapeIdentifier: escapeSQLiteIdentifier,
+        formatValue: (value) => ({ placeholder: "?", value }),
+      });
+      poolOptions?.onQuery?.(formatted);
+    };
     this.#pool = createBaseConnectionPool({
       async openConnection() {
         return connect(filename, options);
@@ -116,6 +141,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
   async query(query: SQLQuery): Promise<any[]> {
     const poolConnection = await this.#pool.getConnection();
     try {
+      this.#onQuery(query);
       const res = poolConnection.connection.query(query);
       return res;
     } finally {
@@ -124,6 +150,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
   }
 
   queryStream(query: SQLQuery): AsyncIterableIterator<any> {
+    this.#onQuery(query);
     return queryStream(this.#pool.getConnection(), query);
   }
 
@@ -133,7 +160,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
     try {
       connection.query(sql`BEGIN`);
       const controller = new AbortController();
-      const tx = new TransactionImplementation(connection);
+      const tx = new TransactionImplementation(connection, this.#onQuery);
       connection.controller = controller;
       const res = await Promise.race([
         fn(tx),
@@ -160,10 +187,10 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
   }
 }
 
-function createConnectionPool(
+export function createConnectionPool(
   filename?: string,
   options?: DatabaseOptions,
-  poolOptions?: PartialPoolOptions
+  poolOptions?: ConnectionPoolOptions
 ): DatabaseConnection {
   return new DatabaseConnectionImplementation(filename, options, poolOptions);
 }

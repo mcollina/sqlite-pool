@@ -13,10 +13,9 @@ write transaction - [source](https://www.sqlite.org/lang_transaction.html).
 ## Usage
 
 ```typescript
-import createConnectionPool, {sql} from '@matteo.collina/sqlite-pool';
+import {sql, createConnectionPool} from '@matteo.collina/sqlite-pool';
 // or in CommonJS:
-// const createConnectionPool = require('@matteo.collina/sqlite-pool');
-// const {sql} = require('@matteo.collina/sqlite-pool');
+// const { createConnectionPool, sql } = require('@matteo.collina/sqlite-pool');
 
 const db = createConnectionPool();
 
