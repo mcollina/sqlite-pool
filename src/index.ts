@@ -46,7 +46,10 @@ class TransactionImplementation implements DatabaseTransaction {
   aborted: boolean = false;
   #onQuery: (query: SQLQuery) => void;
 
-  constructor(connection: SyncDatabaseConnection, onQuery: (query: SQLQuery) => void) {
+  constructor(
+    connection: SyncDatabaseConnection,
+    onQuery: (query: SQLQuery) => void
+  ) {
     this.connection = connection;
     this.#onQuery = onQuery;
   }
@@ -89,11 +92,11 @@ type PartialPoolOptions = Omit<
 type onQueryParamters = {
   text: string;
   values: unknown[];
-}
+};
 
 type ConnectionPoolOptions = PartialPoolOptions & {
-  onQuery? (onQueryParamters): void;
-}
+  onQuery?(onQueryParamters): void;
+};
 
 interface SyncDatabaseConnectionWithController extends SyncDatabaseConnection {
   controller?: AbortController;
@@ -111,8 +114,8 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
     this.#onQuery = (query) => {
       const formatted = query.format({
         escapeIdentifier: escapeSQLiteIdentifier,
-        formatValue: (value) => ({ placeholder: '?', value })
-      })
+        formatValue: (value) => ({ placeholder: "?", value }),
+      });
       poolOptions?.onQuery?.(formatted);
     };
     this.#pool = createBaseConnectionPool({
