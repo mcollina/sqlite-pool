@@ -1,4 +1,4 @@
-import createConnectionPool, { sql } from "../";
+import { sql, createConnectionPool } from "../";
 import { test } from "node:test";
 import assert from "node:assert";
 
@@ -64,4 +64,40 @@ test("two parallel queries", async (t) => {
   }
 
   await Promise.all([query(), query()]);
+});
+
+test("log all queries", async (t) => {
+  let called = false;
+  const db = createConnectionPool(undefined, {}, {
+    onQuery (query) {
+      called = true;
+      assert.strictEqual(query.text, "SELECT 1 + 1 as foo");
+      assert.deepStrictEqual(query.values, []);
+    }
+  });
+  t.after(db.dispose.bind(db));
+  const [{ foo }] = await db.query(sql`SELECT 1 + 1 as foo`);
+  assert.strictEqual(foo, 2);
+  assert.strictEqual(called, true);
+});
+
+
+test("transaction logs", async (t) => {
+  let called = false;
+  const db = createConnectionPool(undefined, {}, {
+    onQuery (query) {
+      called = true;
+      assert.strictEqual(query.text, "SELECT 1 + 1 as foo;");
+      assert.deepStrictEqual(query.values, []);
+    }
+  });
+  t.after(db.dispose.bind(db));
+  const result = await db.tx(async (tx) => {
+    const b = await tx.query(sql`SELECT 1 + 1 as foo;`);
+    return { b };
+  });
+  assert.deepStrictEqual(result, {
+    b: [{ foo: 2 }],
+  });
+  assert.strictEqual(called, true);
 });
