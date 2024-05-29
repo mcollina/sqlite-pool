@@ -21,7 +21,7 @@
     "@databases/connection-pool": "^1.1.0",
     "@databases/escape-identifier": "^1.0.3",
     "@databases/sql": "^3.3.0",
-    "@databases/sqlite-sync": "^1.1.0"
+    "@databases/sqlite-sync": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",
