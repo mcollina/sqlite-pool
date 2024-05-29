@@ -1,6 +1,6 @@
 {
   "name": "@matteo.collina/sqlite-pool",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A connection pool for better-sqlite3 compatible with atdatabases suite",
   "main": "build/index.js",
   "types": "build/index.d.ts",
