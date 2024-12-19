@@ -19,7 +19,7 @@ test("query with params", async (t) => {
   const db = createConnectionPool();
   t.after(db.dispose.bind(db));
   const [{ foo }] = await db.query(
-    sql`SELECT 1 + ${41} as ${sql.ident("foo")}`
+    sql`SELECT 1 + ${41} as ${sql.ident("foo")}`,
   );
   assert.strictEqual(foo, 42);
 });
@@ -28,7 +28,7 @@ test("bigint", async (t) => {
   const db = createConnectionPool();
   t.after(db.dispose.bind(db));
   await db.query(
-    sql`CREATE TABLE bigint_test_bigints (id BIGINT NOT NULL PRIMARY KEY);`
+    sql`CREATE TABLE bigint_test_bigints (id BIGINT NOT NULL PRIMARY KEY);`,
   );
   await db.query(sql`
     INSERT INTO bigint_test_bigints (id)
@@ -77,7 +77,7 @@ test("log all queries", async (t) => {
         assert.strictEqual(query.text, "SELECT 1 + 1 as foo");
         assert.deepStrictEqual(query.values, []);
       },
-    }
+    },
   );
   t.after(db.dispose.bind(db));
   const [{ foo }] = await db.query(sql`SELECT 1 + 1 as foo`);
@@ -96,7 +96,7 @@ test("transaction logs", async (t) => {
         assert.strictEqual(query.text, "SELECT 1 + 1 as foo;");
         assert.deepStrictEqual(query.values, []);
       },
-    }
+    },
   );
   t.after(db.dispose.bind(db));
   const result = await db.tx(async (tx) => {

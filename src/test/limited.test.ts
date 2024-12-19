@@ -6,7 +6,7 @@ async function testPool(t) {
   const db = createConnectionPool(
     ":memory:",
     {},
-    { maxSize: 2, releaseTimeoutMilliseconds: 100 }
+    { maxSize: 2, releaseTimeoutMilliseconds: 100 },
   );
   t.after(db.dispose.bind(db));
   return db;
@@ -41,6 +41,6 @@ test("never releasing", async (t) => {
         // not calling resolve
       });
     }),
-    new Error("Transaction aborted")
+    new Error("Transaction aborted"),
   );
 });
