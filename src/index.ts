@@ -30,7 +30,7 @@ export interface DatabaseConnection extends DatabaseTransaction {
 
 async function* transactionalQueryStream(
   transaction: TransactionImplementation,
-  query: SQLQuery
+  query: SQLQuery,
 ): AsyncIterableIterator<any> {
   const connection = transaction.connection;
   for (const row of connection.queryStream(query)) {
@@ -48,7 +48,7 @@ class TransactionImplementation implements DatabaseTransaction {
 
   constructor(
     connection: SyncDatabaseConnection,
-    onQuery: (query: SQLQuery) => void
+    onQuery: (query: SQLQuery) => void,
   ) {
     this.connection = connection;
     this.#onQuery = onQuery;
@@ -72,7 +72,7 @@ async function* queryStream(
   maybePoolConnection: Promise<
     PoolConnection<SyncDatabaseConnectionWithController>
   >,
-  query: SQLQuery
+  query: SQLQuery,
 ) {
   const poolConnection = await maybePoolConnection;
   try {
@@ -109,7 +109,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
   constructor(
     filename?: string,
     options?: DatabaseOptions,
-    poolOptions?: ConnectionPoolOptions
+    poolOptions?: ConnectionPoolOptions,
   ) {
     this.#onQuery = (query) => {
       const formatted = query.format({
@@ -190,7 +190,7 @@ class DatabaseConnectionImplementation implements DatabaseConnection {
 export function createConnectionPool(
   filename?: string,
   options?: DatabaseOptions,
-  poolOptions?: ConnectionPoolOptions
+  poolOptions?: ConnectionPoolOptions,
 ): DatabaseConnection {
   return new DatabaseConnectionImplementation(filename, options, poolOptions);
 }
