@@ -24,7 +24,7 @@
     "@databases/sqlite-sync": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^25.0.9",
     "prettier": "^3.0.0",
     "typescript": "^5.1.3"
   },
