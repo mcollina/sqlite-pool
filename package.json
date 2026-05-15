@@ -20,8 +20,10 @@
   "dependencies": {
     "@databases/connection-pool": "^1.1.0",
     "@databases/escape-identifier": "^1.0.3",
+    "@databases/split-sql-query": "^1.0.4",
     "@databases/sql": "^3.3.0",
-    "@databases/sqlite-sync": "^3.0.0"
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.10.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",
