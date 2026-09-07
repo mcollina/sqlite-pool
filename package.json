@@ -29,7 +29,7 @@
     "better-sqlite3": "^13.0.3"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3",
+    "@types/node": "^26.4.1",
     "prettier": "^3.0.0",
     "typescript": "^5.1.3"
   },
