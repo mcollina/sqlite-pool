@@ -27,7 +27,7 @@
     "@databases/sql": "^3.3.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3",
+    "@types/node": "^26.6.6",
     "prettier": "^3.9.10",
     "typescript": "^5.1.3"
   },
