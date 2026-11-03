@@ -108,3 +108,18 @@ test("transaction logs", async (t) => {
   });
   assert.strictEqual(called, true);
 });
+
+test("transaction rollback", async (t) => {
+  const db = createConnectionPool();
+  t.after(db.dispose.bind(db));
+  await db.query(sql`CREATE TABLE rb (id INTEGER PRIMARY KEY)`);
+  await assert.rejects(
+    db.tx(async (tx) => {
+      await tx.query(sql`INSERT INTO rb (id) VALUES (1)`);
+      throw new Error("boom");
+    }),
+    /boom/,
+  );
+  const [{ c }] = await db.query(sql`SELECT count(*) as c FROM rb`);
+  assert.strictEqual(c, 0);
+});
